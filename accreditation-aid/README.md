@@ -1,94 +1,61 @@
-# Accreditation Aid
+# Accreditation Aid – SmartSFR Frontend
 
-I am building a project called SmartSFR.
+Modern, high-performance React application for **SmartSFR (Student–Faculty Ratio Analysis & NBA Accreditation Support System)**.
 
-SmartSFR is an academic accreditation support application that calculates and validates the Student-Faculty Ratio according to the NBA accreditation template, specifically Section 4.1.
+---
 
-I already have an existing Python backend project stored in GitHub. The existing repository contains:
+## Overview
 
-- src/nba_rules.py
+`accreditation-aid` is built with **React 19**, **TypeScript**, and **TanStack Start** with **TanStack Router**. It provides an integrated interface for academic administrators to upload institutional CSV records, analyze SFR according to **NBA Section 4.1**, review student distributions, audit faculty rosters, examine step-by-step mathematical calculations, and generate accreditation reports.
 
-- src/sfr_calculator.py
+---
 
-- src/preprocessing.py
+## Key Features
 
-- src/decision_engine.py
+- **Integrated Application Shell**: Persistent dark navy navigation sidebar with active link detection and responsive mobile drawer.
+- **Shared State Management**: Global `SfrContext` with session storage caching ensures uploaded data and analysis persist across page navigation and browser reloads.
+- **Six Completed Sections**:
+  1. **Dashboard (`/`)**: File uploads, status overview, KPI cards, year-wise SFR table, and trend chart.
+  2. **Student Data (`/student-data`)**: Searchable, filterable student records table with cohort metrics.
+  3. **Faculty Data (`/faculty-data`)**: Audit faculty roster by ID, designation, and eligibility badges with NBA compliance guidance.
+  4. **SFR Calculation (`/sfr-calculation`)**: Mathematical breakdown for CAY, CAYm1, CAYm2, student sums, eligible faculty, and 3-year average.
+  5. **Reports (`/reports`)**: Official Self Assessment Report (SAR) Section 4.1 document preview with PDF print layout and Excel/CSV download.
+  6. **About (`/about`)**: Complete NBA accreditation guide, user personas, formulas, and criteria rubric.
 
-- src/prediction.py
+---
 
-- app.py
+## Technology Stack
 
-- raw/dummy_student_data.csv
+- **Framework**: React 19, Vite 8, Nitro
+- **Language**: TypeScript 5.8
+- **Routing**: `@tanstack/react-router` (File-based routing)
+- **State Management**: React Context (`SfrContext`) with session persistence
+- **Styling**: Tailwind CSS v4 with OKLCH design system
+- **Icons**: Lucide React
+- **UI Components**: Radix UI primitives & custom components
 
-- raw/dummy_faculty_data.csv
+---
 
-- requirements.txt
+## Getting Started
 
-The current backend calculation logic is Python-based and uses pandas.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-The main NBA calculation is:
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   * Open `http://localhost:5173` in your browser.
+   * Ensure the backend service is running on `http://127.0.0.1:8000`.
 
-1. Calculate the total students:
+3. Type-check:
+   ```bash
+   npx tsc --noEmit
+   ```
 
-   S = UG2 + UG3 + UG4 + PG1 + PG2
-
-2. Select eligible faculty:
-
-   - Regular faculty are included.
-
-   - Eligible full-time contractual faculty are included.
-
-   - First-year faculty are excluded.
-
-   - Part-time and hourly faculty are excluded.
-
-3. Calculate yearly SFR:
-
-   SFR = Total Students / Eligible Faculty
-
-4. Calculate the three-year average:
-
-   Average SFR = (SFR_CAY + SFR_CAYm1 + SFR_CAYm2) / 3
-
-5. Calculate NBA marks:
-
-   - Average SFR <= 15: 15 marks
-
-   - Average SFR <= 17: 14 marks
-
-   - Average SFR <= 19: 13 marks
-
-   - Average SFR <= 21: 12 marks
-
-   - Average SFR <= 23: 11 marks
-
-   - Average SFR <= 25: 10 marks
-
-   - Average SFR > 25: 0 marks
-
-For now, I want to build only the frontend UI. Do not unnecessarily rewrite or replace my existing Python calculation logic.
-
-The frontend should initially use mock data that visually matches the attached reference screenshot. Later, it will be connected to the Python backend through an API.
-
-Please first understand the requirements and create the frontend structure. Do not add unnecessary features or change the main design direction.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/509190ea-4f60-4c40-b9ca-4c0efcc2730f).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+4. Production build:
+   ```bash
+   npm run build
+   ```

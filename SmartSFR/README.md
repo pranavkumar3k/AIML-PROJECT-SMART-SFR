@@ -1,181 +1,99 @@
-# SmartSFR
+# SmartSFR – Backend Service
 
-SmartSFR is a Python-based backend for analyzing Student-Faculty Ratio (SFR) using CSV uploads. It validates institutional data, calculates SFR for the current and previous academic years, and produces the average SFR and NBA marks used in accreditation assessments.
+FastAPI-powered calculation and data processing backend for **SmartSFR (Student–Faculty Ratio Analysis & NBA Accreditation Support System)**.
+
+---
 
 ## Overview
 
-This project is designed for academic quality analysis, especially for NBA-style reporting. It reads:
+The `SmartSFR` service processes institutional student enrollment and faculty roster CSV files, validates required attributes according to **NBA Chapter 4 (Section 4.1)** guidelines, computes annual and three-year average SFR metrics, and returns structured analysis payloads.
 
-- student data by academic year, program type, and year of study
-- faculty data by academic year, designation, association, and full-time status
-
-Then it calculates:
-
-- yearly SFR for CAY, CAYm1, and CAYm2
-- average SFR across the three years
-- NBA marks based on the average SFR rules
+---
 
 ## Features
 
-- FastAPI backend service
-- CSV upload endpoint for student and faculty data
-- Required-column validation for both files
-- SFR calculations aligned with NBA Section 4.1 logic
-- Dummy sample datasets included for testing
-- Built-in Python tests for the calculation logic
+- **FastAPI REST API**: High-performance asynchronous API endpoints with auto-generated OpenAPI/Swagger documentation.
+- **Multipart CSV Upload**: Validates required schema, non-empty files, and tabular data integrity.
+- **NBA Calculation Engine**:
+  - Excludes first-year UG students ($S = \text{UG2} + \text{UG3} + \text{UG4} + \text{PG1} + \text{PG2}$).
+  - Evaluates faculty eligibility (Full-time, Non-FY, Regular/Contractual).
+  - Annotates ineligibility reasons for excluded faculty.
+  - Computes yearly SFR and 3-year arithmetic mean.
+  - Applies NBA marks criteria ($\le 15 \to 15$ down to $> 25 \to 0$).
+- **Built-in Sample Dataset API**: Allows immediate previewing with bundled CSV datasets.
+- **Comprehensive Unit & Integration Test Suites**: Built with Python `unittest`.
 
-## Project Structure
+---
+
+## Directory Structure
 
 ```text
 SmartSFR/
-│
-├── app.py                  # FastAPI application and API routes
-├── requirements.txt        # Python dependencies
-├── README.md               # Project documentation
-├── test_sfr.py             # Console test script for sample calculation
+├── app.py                      # FastAPI application, CORS, and endpoints
+├── requirements.txt            # Python dependencies
+├── README.md                   # Backend documentation
+├── test_sfr.py                 # Baseline sample calculation script
+├── test_comprehensive.py       # Comprehensive unit & edge-case test suite
+├── test_api_integration.py     # API upload & error handling integration tests
 ├── raw/
-│   ├── dummy_student_data.csv
-│   └── dummy_faculty_data.csv
-├── processed/
-│   └── output files generated during use
+│   ├── dummy_student_data.csv  # 15-row sample student dataset (CAY, CAYm1, CAYm2)
+│   └── dummy_faculty_data.csv  # 11-row sample faculty dataset
+├── processed/                  # Generated files directory
 └── src/
     ├── __init__.py
     ├── decision_engine.py
-    ├── nba_rules.py        # NBA SFR formula and marks logic
+    ├── nba_rules.py            # NBA Section 4.1 mathematical formulas
     ├── prediction.py
     ├── preprocessing.py
-    ├── sfr_calculator.py   # Main yearly and 3-year SFR calculations
-    └── test_sfr.py
+    └── sfr_calculator.py       # Year-wise & 3-year SFR computation logic
 ```
 
-## Tech Stack
+---
 
-- Python 3
-- FastAPI
-- Pandas
-- Pydantic (via FastAPI)
+## Setup & Running
 
-## Setup
+1. Activate the Python virtual environment:
+   * **Windows (PowerShell)**:
+     ```powershell
+     .\venv\Scripts\Activate.ps1
+     ```
+   * **Linux/macOS**:
+     ```bash
+     source venv/bin/activate
+     ```
 
-1. Clone the repository.
-2. Create and activate a virtual environment:
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-python -m venv .venv
-```
+3. Launch the API server:
+   ```bash
+   uvicorn app:app --reload --port 8000
+   ```
+   * Server URL: `http://127.0.0.1:8000`
+   * Interactive Swagger Docs: `http://127.0.0.1:8000/docs`
 
-On Windows PowerShell:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-On macOS/Linux:
-
-```bash
-source .venv/bin/activate
-```
-
-3. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Run the App
-
-Start the API server:
-
-```bash
-uvicorn app:app --reload
-```
-
-The API will be available at:
-
-- http://localhost:8000
-- Swagger docs: http://localhost:8000/docs
+---
 
 ## API Endpoints
 
-### GET /
-Returns a basic health message.
+- `GET /`: Health check & API root.
+- `GET /health`: Health status endpoint (`{"status": "ok"}`).
+- `GET /sample-analysis`: Returns computed SFR analysis using the bundled raw sample datasets.
+- `POST /analyze`: Multipart form upload endpoint expecting `student_file` and `faculty_file`.
 
-### GET /health
-Returns application health status.
+---
 
-### POST /analyze
-Uploads two CSV files:
-
-- student_file
-- faculty_file
-
-#### Request format
-Use multipart form data.
-
-#### Expected student CSV columns
-
-```text
-academic_year
-program
-program_type
-year_of_study
-student_count
-```
-
-#### Expected faculty CSV columns
-
-```text
-academic_year
-faculty_id
-designation
-association
-full_time
-first_year_faculty
-```
-
-#### Example
+## Running Backend Tests
 
 ```bash
-curl -X POST "http://localhost:8000/analyze" \
-  -F "student_file=@raw/dummy_student_data.csv" \
-  -F "faculty_file=@raw/dummy_faculty_data.csv"
-```
+# Unit & edge case test suite
+python test_comprehensive.py
 
-## Sample Output
+# API integration test suite
+python test_api_integration.py
 
-The response contains yearly SFR information and the final average value:
-
-```json
-{
-  "yearly_results": {
-    "CAY": {
-      "academic_year": "CAY",
-      "total_students": 120,
-      "faculty_count": 8,
-      "sfr": 15.0
-    }
-  },
-  "average_sfr": 14.5,
-  "marks": 15
-}
-```
-
-## Running the Sample Calculation
-
-You can run the built-in sample calculation script:
-
-```bash
+# Console SFR calculation script
 python test_sfr.py
 ```
-
-This reads the dummy CSV files in the raw folder and prints the SFR analysis summary to the console.
-
-## Notes
-
-- Student counts are grouped by academic year and study level.
-- Only full-time faculty who are not first-year faculty and are in eligible associations are counted.
-- The current logic follows the project’s NBA interpretation for SFR calculation and scoring.
-
-## License
-
-This project is for internal academic analysis and personal use unless otherwise specified.
