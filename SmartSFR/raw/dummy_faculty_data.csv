@@ -1,0 +1,12 @@
+academic_year,faculty_id,designation,association,full_time,first_year_faculty
+CAY,F001,Assistant Professor,Regular,Yes,No
+CAY,F002,Assistant Professor,Regular,Yes,No
+CAY,F003,Associate Professor,Regular,Yes,No
+CAY,F004,Assistant Professor,Contractual,Yes,No
+CAYm1,F001,Assistant Professor,Regular,Yes,No
+CAYm1,F002,Assistant Professor,Regular,Yes,No
+CAYm1,F003,Associate Professor,Regular,Yes,No
+CAYm1,F004,Assistant Professor,Contractual,Yes,No
+CAYm2,F001,Assistant Professor,Regular,Yes,No
+CAYm2,F002,Assistant Professor,Regular,Yes,No
+CAYm2,F003,Associate Professor,Regular,Yes,No

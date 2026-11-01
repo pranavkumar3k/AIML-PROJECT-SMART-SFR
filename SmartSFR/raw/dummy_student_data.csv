@@ -1,0 +1,16 @@
+academic_year,program,program_type,year_of_study,student_count
+CAY,B.Tech CSE,UG,2,60
+CAY,B.Tech CSE,UG,3,55
+CAY,B.Tech CSE,UG,4,50
+CAY,M.Tech CSE,PG,1,20
+CAY,M.Tech CSE,PG,2,15
+CAYm1,B.Tech CSE,UG,2,58
+CAYm1,B.Tech CSE,UG,3,52
+CAYm1,B.Tech CSE,UG,4,48
+CAYm1,M.Tech CSE,PG,1,18
+CAYm1,M.Tech CSE,PG,2,14
+CAYm2,B.Tech CSE,UG,2,55
+CAYm2,B.Tech CSE,UG,3,50
+CAYm2,B.Tech CSE,UG,4,45
+CAYm2,M.Tech CSE,PG,1,16
+CAYm2,M.Tech CSE,PG,2,12
