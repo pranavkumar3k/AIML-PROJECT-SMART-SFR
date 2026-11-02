@@ -32,8 +32,8 @@ $$S = UG2 + UG3 + UG4 + PG1 + PG2$$
 
 ### Faculty Eligibility Formula ($F$)
 $$F = F_{Regular} + F_{Contractual}$$
-* **Eligible:** Full-time departmental teaching faculty (`full_time == "Yes"` and `first_year_faculty == "No"`).
-* **Excluded:** Part-time, visiting, hourly, adjunct, and first-year dedicated faculty.
+* **Eligible:** Full-time departmental teaching faculty (`full_time == "Yes"` and `first_year_faculty == "No"`) with Regular/Contractual association, joining on or before August 1 and not leaving before June 1 for that academic year.
+* **Excluded:** Part-time, visiting, hourly, adjunct, first-year dedicated faculty, faculty joining after August 1, and faculty leaving before June 1.
 * **Contractual Verification Note:** Institutional proof (open selection committee, 2 consecutive semesters, AICTE qualification norms) is required during NBA peer visits.
 
 ### Yearly SFR & 3-Year Average
@@ -70,12 +70,14 @@ CAY,M.Tech CSE,PG,2,15
 ### Faculty CSV (`faculty_file.csv`)
 Columns required:
 ```csv
-academic_year,faculty_id,designation,association,full_time,first_year_faculty
-CAY,F001,Assistant Professor,Regular,Yes,No
-CAY,F002,Assistant Professor,Regular,Yes,No
-CAY,F003,Associate Professor,Regular,Yes,No
-CAY,F004,Assistant Professor,Contractual,Yes,No
+academic_year,faculty_id,designation,association,full_time,first_year_faculty,joining_date,leaving_date
+CAY,F001,Assistant Professor,Regular,Yes,No,2023-07-15,
+CAY,F002,Assistant Professor,Regular,Yes,No,2024-09-10,
+CAY,F003,Associate Professor,Regular,Yes,No,2023-06-01,2025-05-15
+CAY,F004,Assistant Professor,Contractual,Yes,No,2023-08-01,
 ```
+
+Faculty eligibility is evaluated independently for CAY, CAYm1, and CAYm2 using each year's August 1–June 30 period. Full-time, non-first-year Regular/Contractual faculty qualify when they joined on or before August 1 and left on or after June 1. CAY is the current academic year and CAYm1/CAYm2 are its two predecessors. An empty `leaving_date` means currently employed.
 
 ---
 
@@ -106,11 +108,11 @@ CAY,F004,Assistant Professor,Contractual,Yes,No
 ## 6. Verification & Test Commands
 
 ```bash
-# 1. Run Backend Unit & Edge-Case Tests (5/5 tests)
+# 1. Run Backend Unit & Edge-Case Tests
 cd SmartSFR
 .\venv\Scripts\python.exe test_comprehensive.py
 
-# 2. Run Backend API Integration Tests (5/5 tests)
+# 2. Run Backend API Integration Tests
 cd SmartSFR
 .\venv\Scripts\python.exe test_api_integration.py
 

@@ -114,6 +114,8 @@ async def analyze(
             "association",
             "full_time",
             "first_year_faculty",
+            "joining_date",
+            "leaving_date",
         }
 
         missing_student_columns = required_student_columns - set(student_df.columns)

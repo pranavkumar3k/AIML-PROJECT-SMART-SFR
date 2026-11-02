@@ -107,7 +107,7 @@ export function AboutView() {
               F = F_Regular + F_Contractual
             </div>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Only full-time faculty deployed for departmental engineering instruction are counted. Excludes part-time, visiting, hourly, and first-year dedicated faculty.
+              Full-time, non-first-year faculty with Regular or Contractual appointments are counted when they joined on or before August 1 and did not leave before June 1. Eligibility is checked separately for each year.
             </p>
           </div>
 
@@ -147,6 +147,7 @@ export function AboutView() {
               <li><strong>Full-Time Status:</strong> Faculty marked with <code>full_time == "Yes"</code>. Part-time and visiting faculty are excluded.</li>
               <li><strong>Departmental Teaching:</strong> Faculty marked with <code>first_year_faculty == "No"</code> (teaching UG2, UG3, UG4, PG).</li>
               <li><strong>Valid Association:</strong> Association classified as <code>Regular</code> or <code>Contractual</code>.</li>
+              <li><strong>Joining/Leaving Dates:</strong> Joined on or before August 1 and not left before June 1 for the specific academic year. CAYm1 and CAYm2 use their own preceding-year boundaries.</li>
             </ul>
           </div>
 

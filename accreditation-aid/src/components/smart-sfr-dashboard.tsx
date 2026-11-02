@@ -221,7 +221,12 @@ export function YearlyTable({ yearlyResults }: { yearlyResults: AnalysisResult["
           {rows.length ? (
             rows.map((row) => (
               <tr key={row.academic_year} className="border-t border-border bg-card">
-                <td className="table-cell text-left font-semibold">{row.academic_year}</td>
+                <td className="table-cell text-left font-semibold">
+                  {row.academic_year}
+                  <span className="block text-[10px] font-normal text-muted-foreground">
+                    {row.academic_year_start_date ?? "—"} to {row.academic_year_end_date ?? "—"}
+                  </span>
+                </td>
                 <td className="table-cell">{row.ug2_students}</td>
                 <td className="table-cell">{row.ug3_students}</td>
                 <td className="table-cell">{row.ug4_students}</td>

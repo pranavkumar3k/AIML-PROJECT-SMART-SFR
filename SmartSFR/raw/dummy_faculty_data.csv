@@ -1,12 +1,12 @@
-academic_year,faculty_id,designation,association,full_time,first_year_faculty
-CAY,F001,Assistant Professor,Regular,Yes,No
-CAY,F002,Assistant Professor,Regular,Yes,No
-CAY,F003,Associate Professor,Regular,Yes,No
-CAY,F004,Assistant Professor,Contractual,Yes,No
-CAYm1,F001,Assistant Professor,Regular,Yes,No
-CAYm1,F002,Assistant Professor,Regular,Yes,No
-CAYm1,F003,Associate Professor,Regular,Yes,No
-CAYm1,F004,Assistant Professor,Contractual,Yes,No
-CAYm2,F001,Assistant Professor,Regular,Yes,No
-CAYm2,F002,Assistant Professor,Regular,Yes,No
-CAYm2,F003,Associate Professor,Regular,Yes,No
+academic_year,faculty_id,designation,association,full_time,first_year_faculty,joining_date,leaving_date
+CAY,F001,Assistant Professor,Regular,Yes,No,2023-07-15,
+CAY,F002,Assistant Professor,Regular,Yes,No,2024-09-10,
+CAY,F003,Associate Professor,Regular,Yes,No,2023-06-01,2025-06-15
+CAY,F004,Assistant Professor,Contractual,Yes,No,2023-08-01,
+CAYm1,F001,Assistant Professor,Regular,Yes,No,2023-07-15,
+CAYm1,F002,Assistant Professor,Regular,Yes,No,2024-09-10,
+CAYm1,F003,Associate Professor,Regular,Yes,No,2023-06-01,2025-06-15
+CAYm1,F004,Assistant Professor,Contractual,Yes,No,2023-08-01,
+CAYm2,F001,Assistant Professor,Regular,Yes,No,2023-07-15,
+CAYm2,F002,Assistant Professor,Regular,Yes,No,2024-09-10,
+CAYm2,F003,Associate Professor,Regular,Yes,No,2023-06-01,2025-06-15

@@ -17,12 +17,14 @@ Modern, high-performance React application for **SmartSFR (Student–Faculty Rat
 - **Six Completed Sections**:
   1. **Dashboard (`/`)**: File uploads, status overview, KPI cards, year-wise SFR table, and trend chart.
   2. **Student Data (`/student-data`)**: Searchable, filterable student records table with cohort metrics.
-  3. **Faculty Data (`/faculty-data`)**: Audit faculty roster by ID, designation, and eligibility badges with NBA compliance guidance.
+  3. **Faculty Data (`/faculty-data`)**: Audit faculty roster by ID, dates, year-specific eligibility, and exact exclusion reasons.
   4. **SFR Calculation (`/sfr-calculation`)**: Mathematical breakdown for CAY, CAYm1, CAYm2, student sums, eligible faculty, and 3-year average.
   5. **Reports (`/reports`)**: Official Self Assessment Report (SAR) Section 4.1 document preview with PDF print layout and Excel/CSV download.
   6. **About (`/about`)**: Complete NBA accreditation guide, user personas, formulas, and criteria rubric.
 
 ---
+
+Faculty uploads include `joining_date` and `leaving_date` in `YYYY-MM-DD` format; an empty leaving date means currently employed. Eligibility is calculated separately for CAY, CAYm1, and CAYm2. The periods run August 1 through June 30 of the following calendar year, and faculty joining after August 1 or leaving before June 1 are excluded. CAY is derived from the current academic year; CAYm1 and CAYm2 use the two preceding years.
 
 ## Technology Stack
 
