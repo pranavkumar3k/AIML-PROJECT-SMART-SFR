@@ -192,7 +192,7 @@ export function FacultyDataView() {
           title="Eligible Faculty"
           subtitle="NBA Compliant"
           value={String(eligibleCount)}
-          note="Full-time, Non-FY, Regular/Contractual"
+          note="Full-time, non-first-year and date-qualified"
           icon={CheckCircle2}
           tone="green"
         />
@@ -230,6 +230,12 @@ export function FacultyDataView() {
                 <strong>Verified by Dataset:</strong> Full-time employment status (<code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded">full_time == "Yes"</code>),
                 exclusion of first-year faculty (<code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded">first_year_faculty == "No"</code>), and
                 appointment association (<code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded">Regular</code> or <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded">Contractual</code>).
+              </li>
+              <li>
+                <strong>Year-specific date checks:</strong> Faculty must join on
+                or before August 1 and must not leave before June 1 for the
+                displayed academic year. Eligibility is recalculated
+                independently for CAY, CAYm1, and CAYm2.
               </li>
               <li>
                 <strong>Requires Institutional Verification:</strong> For Contractual faculty, NBA guidelines stipulate that they must be appointed through an open selection process, possess AICTE/UGC recommended qualifications and experience, and have served for a minimum of two consecutive semesters. Because these institutional compliance details are not captured in CSV columns, they are marked as <em>"Eligible in CSV (Pending institutional document verification)"</em>.
@@ -344,7 +350,7 @@ export function FacultyDataView() {
       {/* Faculty Records Table */}
       <section className="panel p-4">
         <div className="overflow-x-auto rounded-md border border-border">
-          <table className="w-full min-w-[760px] border-collapse text-center text-xs">
+          <table className="w-full min-w-[1080px] border-collapse text-center text-xs">
             <thead className="bg-table-header text-foreground">
               <tr>
                 <th
@@ -385,6 +391,8 @@ export function FacultyDataView() {
                 </th>
                 <th className="table-cell">Full-Time Status</th>
                 <th className="table-cell">1st Year Faculty</th>
+                <th className="table-cell">Joining Date</th>
+                <th className="table-cell">Leaving Date</th>
                 <th
                   onClick={() => toggleSort("is_eligible")}
                   className="table-cell cursor-pointer hover:bg-muted/80 select-none"
@@ -406,7 +414,10 @@ export function FacultyDataView() {
                     }`}
                   >
                     <td className="table-cell text-left font-semibold text-foreground">
-                      {record.academic_year}
+                      <span>{record.academic_year}</span>
+                      <span className="block text-[10px] font-normal text-muted-foreground">
+                        {record.academic_year_start_date ?? "—"} to {record.academic_year_end_date ?? "—"}
+                      </span>
                     </td>
                     <td className="table-cell text-left font-mono font-medium text-foreground">
                       {record.faculty_id}
@@ -446,6 +457,8 @@ export function FacultyDataView() {
                         <span className="text-amber-700 dark:text-amber-400 font-bold">Yes (1st Year)</span>
                       )}
                     </td>
+                    <td className="table-cell">{record.joining_date ?? "—"}</td>
+                    <td className="table-cell">{record.leaving_date ?? "Currently employed"}</td>
                     <td className="table-cell">
                       {record.is_eligible ? (
                         <div className="flex items-center justify-center gap-1.5">
@@ -466,11 +479,11 @@ export function FacultyDataView() {
                           <Badge variant="destructive" className="font-semibold text-[11px]">
                             Ineligible
                           </Badge>
-                          {record.ineligibility_reasons && record.ineligibility_reasons.length > 0 && (
-                            <span className="text-[10px] text-destructive/80 mt-0.5 max-w-[200px] truncate" title={record.ineligibility_reasons.join(", ")}>
-                              {record.ineligibility_reasons[0]}
+                          {record.ineligibility_reasons?.length ? (
+                            <span className="mt-0.5 max-w-[260px] text-left text-[10px] text-destructive/80">
+                              {record.ineligibility_reasons.join(" ")}
                             </span>
-                          )}
+                          ) : null}
                         </div>
                       )}
                     </td>
@@ -478,7 +491,7 @@ export function FacultyDataView() {
                 ))
               ) : (
                 <tr className="border-t border-border bg-card">
-                  <td colSpan={7} className="table-cell py-8 text-center text-muted-foreground">
+                  <td colSpan={9} className="table-cell py-8 text-center text-muted-foreground">
                     No faculty records match the selected filter criteria.
                   </td>
                 </tr>
@@ -487,7 +500,7 @@ export function FacultyDataView() {
             {filteredRecords.length > 0 && (
               <tfoot className="border-t-2 border-border bg-muted/40 font-bold">
                 <tr>
-                  <td colSpan={6} className="table-cell text-right pr-4">
+                  <td colSpan={8} className="table-cell text-right pr-4">
                     Filtered Faculty:
                   </td>
                   <td className="table-cell text-center text-foreground font-extrabold">

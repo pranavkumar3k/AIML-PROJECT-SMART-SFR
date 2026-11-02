@@ -11,6 +11,8 @@ export type FileKind = "student" | "faculty";
 
 export type YearlyResult = {
   academic_year: string;
+  academic_year_start_date: string;
+  academic_year_end_date: string;
   ug2_students: number;
   ug3_students: number;
   ug4_students: number;
@@ -34,16 +36,43 @@ export type StudentRecord = {
   student_count: number;
 };
 
-export type FacultyRecord = {
+export type YearlyEligibility = {
   academic_year: string;
+  academic_year_start_date: string;
+  academic_year_end_date: string;
+  is_eligible: boolean;
+  ineligibility_reasons: string[];
+  status?: string;
+  reason?: string;
+};
+
+export type FacultyAuditEntry = {
   faculty_id: string;
   designation: string;
   association: string;
   full_time: string;
   first_year_faculty: string;
+  joining_date: string | null;
+  leaving_date: string | null;
+  academic_years?: Record<string, YearlyEligibility>;
+  yearly_eligibility: Record<string, YearlyEligibility>;
+};
+
+export type FacultyRecord = {
+  academic_year: string;
+  academic_year_start_date: string;
+  academic_year_end_date: string;
+  faculty_id: string;
+  designation: string;
+  association: string;
+  full_time: string;
+  first_year_faculty: string;
+  joining_date: string | null;
+  leaving_date: string | null;
   is_eligible: boolean;
   ineligibility_reasons: string[];
   nba_verification_status: string;
+  yearly_eligibility?: Record<string, YearlyEligibility>;
 };
 
 export type StudentSummary = {
@@ -60,6 +89,16 @@ export type FacultySummary = {
   ineligible_faculty: number;
   regular_eligible_faculty: number;
   contractual_eligible_faculty: number;
+  by_year?: Record<
+    string,
+    {
+      eligible_faculty: number;
+      ineligible_faculty: number;
+      regular_eligible_faculty: number;
+      contractual_eligible_faculty: number;
+      total_faculty: number;
+    }
+  >;
 };
 
 export type AnalysisResult = {
@@ -73,6 +112,7 @@ export type AnalysisResult = {
   threshold_applied?: string;
   student_records?: StudentRecord[];
   faculty_records?: FacultyRecord[];
+  faculty_audit?: FacultyAuditEntry[];
   student_summary?: StudentSummary;
   faculty_summary?: FacultySummary;
 };
@@ -115,7 +155,7 @@ const DEFAULT_FILES: FilesMeta = {
   },
   faculty: {
     name: "dummy_faculty_data.csv",
-    records: 12,
+    records: 11,
   },
 };
 
@@ -280,7 +320,7 @@ export function SfrProvider({ children }: { children: ReactNode }) {
         },
         faculty: {
           name: "dummy_faculty_data.csv",
-          records: result.faculty_records?.length ?? 12,
+          records: result.faculty_records?.length ?? 11,
         },
       };
 

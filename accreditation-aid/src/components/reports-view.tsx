@@ -21,6 +21,10 @@ import { Badge } from "@/components/ui/badge";
 import { useSfr } from "@/context/sfr-context";
 import { MarksTable, PanelTitle } from "@/components/smart-sfr-dashboard";
 
+function quoteCsvField(value: string | number | null | undefined) {
+  return `"${String(value ?? "").replace(/"/g, '""')}"`;
+}
+
 export function ReportsView() {
   const { analysis, loadSampleData, analysisState, files } = useSfr();
   const [downloading, setDownloading] = useState(false);
@@ -88,10 +92,41 @@ export function ReportsView() {
 
       // Section 2: Year-wise SFR Breakdown
       csvContent += "YEAR-WISE SFR SUMMARY TABLE (Section 4.1)\n";
-      csvContent += "Assessment Year,Academic Year,UG2,UG3,UG4,PG1,PG2,Total Students (S),Eligible Faculty (F),Regular Faculty,Contractual Faculty,Yearly SFR (S/F)\n";
-      csvContent += `CAY,${cay.academic_year},${cay.ug2_students},${cay.ug3_students},${cay.ug4_students},${cay.pg1_students},${cay.pg2_students},${cay.total_students},${cay.faculty_count},${cay.regular_faculty_count ?? ""},${cay.contractual_faculty_count ?? ""},${cay.sfr.toFixed(2)}\n`;
-      csvContent += `CAYm1,${caym1.academic_year},${caym1.ug2_students},${caym1.ug3_students},${caym1.ug4_students},${caym1.pg1_students},${caym1.pg2_students},${caym1.total_students},${caym1.faculty_count},${caym1.regular_faculty_count ?? ""},${caym1.contractual_faculty_count ?? ""},${caym1.sfr.toFixed(2)}\n`;
-      csvContent += `CAYm2,${caym2.academic_year},${caym2.ug2_students},${caym2.ug3_students},${caym2.ug4_students},${caym2.pg1_students},${caym2.pg2_students},${caym2.total_students},${caym2.faculty_count},${caym2.regular_faculty_count ?? ""},${caym2.contractual_faculty_count ?? ""},${caym2.sfr.toFixed(2)}\n\n`;
+      const yearlyColumns = [
+        "Assessment Year",
+        "Academic Year",
+        "Assessment Period",
+        "UG2",
+        "UG3",
+        "UG4",
+        "PG1",
+        "PG2",
+        "Total Students (S)",
+        "Eligible Faculty (F)",
+        "Regular Faculty",
+        "Contractual Faculty",
+        "Yearly SFR (S/F)",
+      ];
+      csvContent += `${yearlyColumns.join(",")}\n`;
+      const yearlyCsvRow = (assessmentYear: string, year: typeof cay) =>
+        [
+          assessmentYear,
+          year.academic_year,
+          `${year.academic_year_start_date ?? "—"} to ${year.academic_year_end_date ?? "—"}`,
+          year.ug2_students,
+          year.ug3_students,
+          year.ug4_students,
+          year.pg1_students,
+          year.pg2_students,
+          year.total_students,
+          year.faculty_count,
+          year.regular_faculty_count ?? "",
+          year.contractual_faculty_count ?? "",
+          year.sfr.toFixed(2),
+        ].join(",");
+      csvContent += `${yearlyCsvRow("CAY", cay)}\n`;
+      csvContent += `${yearlyCsvRow("CAYm1", caym1)}\n`;
+      csvContent += `${yearlyCsvRow("CAYm2", caym2)}\n\n`;
 
       // Section 3: Student Cohort Details
       if (student_records && student_records.length > 0) {
@@ -106,9 +141,37 @@ export function ReportsView() {
       // Section 4: Faculty Roster and Eligibility
       if (faculty_records && faculty_records.length > 0) {
         csvContent += "FACULTY ROSTER AND NBA ELIGIBILITY AUDIT\n";
-        csvContent += "Academic Year,Faculty ID,Designation,Association,Full-Time,First-Year Faculty,Eligibility Status,Verification Remarks\n";
+        const facultyAuditColumns = [
+          "Academic Year",
+          "Assessment Period",
+          "Faculty ID",
+          "Designation",
+          "Association",
+          "Full-Time",
+          "First-Year Faculty",
+          "Joining Date",
+          "Leaving Date",
+          "Eligibility Status",
+          "Exclusion Reasons",
+          "Verification Remarks",
+        ];
+        csvContent += `${facultyAuditColumns.join(",")}\n`;
         faculty_records.forEach((f) => {
-          csvContent += `"${f.academic_year}","${f.faculty_id}","${f.designation}","${f.association}","${f.full_time}","${f.first_year_faculty}","${f.is_eligible ? "Eligible" : "Ineligible"}","${f.nba_verification_status.replace(/"/g, '""')}"\n`;
+          const facultyAuditRow = [
+            f.academic_year,
+            `${f.academic_year_start_date ?? "—"} to ${f.academic_year_end_date ?? "—"}`,
+            f.faculty_id,
+            f.designation,
+            f.association,
+            f.full_time,
+            f.first_year_faculty,
+            f.joining_date,
+            f.leaving_date,
+            f.is_eligible ? "Eligible" : "Excluded",
+            f.ineligibility_reasons.join("; "),
+            f.nba_verification_status,
+          ];
+          csvContent += `${facultyAuditRow.map(quoteCsvField).join(",")}\n`;
         });
       }
 
@@ -218,7 +281,7 @@ export function ReportsView() {
             <table className="w-full border-collapse text-center text-xs">
               <thead className="bg-table-header font-bold text-foreground">
                 <tr>
-                  <th className="table-cell text-left">Academic Year</th>
+                  <th className="table-cell text-left">Academic Year / Period</th>
                   <th className="table-cell">UG2</th>
                   <th className="table-cell">UG3</th>
                   <th className="table-cell">UG4</th>
@@ -231,7 +294,12 @@ export function ReportsView() {
               </thead>
               <tbody>
                 <tr className="border-t border-border">
-                  <td className="table-cell text-left font-semibold">CAY ({cay.academic_year})</td>
+                  <td className="table-cell text-left font-semibold">
+                    CAY ({cay.academic_year}){" "}
+                    <span className="block text-[10px] font-normal text-muted-foreground">
+                      {cay.academic_year_start_date ?? "—"} to {cay.academic_year_end_date ?? "—"}
+                    </span>
+                  </td>
                   <td className="table-cell">{cay.ug2_students}</td>
                   <td className="table-cell">{cay.ug3_students}</td>
                   <td className="table-cell">{cay.ug4_students}</td>
@@ -242,7 +310,13 @@ export function ReportsView() {
                   <td className="table-cell font-extrabold text-primary">{cay.sfr.toFixed(2)}</td>
                 </tr>
                 <tr className="border-t border-border">
-                  <td className="table-cell text-left font-semibold">CAYm1 ({caym1.academic_year})</td>
+                  <td className="table-cell text-left font-semibold">
+                    CAYm1 ({caym1.academic_year}){" "}
+                    <span className="block text-[10px] font-normal text-muted-foreground">
+                      {caym1.academic_year_start_date ?? "—"} to{" "}
+                      {caym1.academic_year_end_date ?? "—"}
+                    </span>
+                  </td>
                   <td className="table-cell">{caym1.ug2_students}</td>
                   <td className="table-cell">{caym1.ug3_students}</td>
                   <td className="table-cell">{caym1.ug4_students}</td>
@@ -253,7 +327,13 @@ export function ReportsView() {
                   <td className="table-cell font-extrabold text-primary">{caym1.sfr.toFixed(2)}</td>
                 </tr>
                 <tr className="border-t border-border">
-                  <td className="table-cell text-left font-semibold">CAYm2 ({caym2.academic_year})</td>
+                  <td className="table-cell text-left font-semibold">
+                    CAYm2 ({caym2.academic_year}){" "}
+                    <span className="block text-[10px] font-normal text-muted-foreground">
+                      {caym2.academic_year_start_date ?? "—"} to{" "}
+                      {caym2.academic_year_end_date ?? "—"}
+                    </span>
+                  </td>
                   <td className="table-cell">{caym2.ug2_students}</td>
                   <td className="table-cell">{caym2.ug3_students}</td>
                   <td className="table-cell">{caym2.ug4_students}</td>
@@ -329,16 +409,69 @@ export function ReportsView() {
           </div>
         </div>
 
-        {/* 6. NBA Scoring Rubric Reference */}
+        {/* 6. Faculty Eligibility Audit */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Users className="size-4 text-primary" />
+            3. Faculty Joining/Leaving Date & Eligibility Audit
+          </h3>
+          <div className="overflow-x-auto rounded-md border border-border">
+            <table className="w-full min-w-[1050px] border-collapse text-left text-xs">
+              <thead className="bg-table-header font-bold text-foreground">
+                <tr>
+                  <th className="table-cell">Academic Year / Period</th>
+                  <th className="table-cell">Faculty ID</th>
+                  <th className="table-cell">Designation</th>
+                  <th className="table-cell">Association</th>
+                  <th className="table-cell">Joining Date</th>
+                  <th className="table-cell">Leaving Date</th>
+                  <th className="table-cell">Status</th>
+                  <th className="table-cell">Exclusion Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(faculty_records ?? []).map((faculty, index) => (
+                  <tr
+                    key={`${faculty.academic_year}-${faculty.faculty_id}-${index}`}
+                    className="border-t border-border"
+                  >
+                    <td className="table-cell">
+                      {faculty.academic_year}
+                      <span className="block text-[10px] text-muted-foreground">
+                        {faculty.academic_year_start_date ?? "—"} to{" "}
+                        {faculty.academic_year_end_date ?? "—"}
+                      </span>
+                    </td>
+                    <td className="table-cell">{faculty.faculty_id}</td>
+                    <td className="table-cell">{faculty.designation}</td>
+                    <td className="table-cell">{faculty.association}</td>
+                    <td className="table-cell">{faculty.joining_date ?? "—"}</td>
+                    <td className="table-cell">{faculty.leaving_date ?? "Currently employed"}</td>
+                    <td className="table-cell">
+                      <Badge variant={faculty.is_eligible ? "default" : "destructive"}>
+                        {faculty.is_eligible ? "Eligible" : "Excluded"}
+                      </Badge>
+                    </td>
+                    <td className="table-cell">
+                      {faculty.ineligibility_reasons.join("; ") || "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* 7. NBA Scoring Rubric Reference */}
         <div className="space-y-2">
           <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
             <Award className="size-4 text-primary" />
-            3. NBA Chapter 4 Scoring Rubric
+            4. NBA Chapter 4 Scoring Rubric
           </h3>
           <MarksTable />
         </div>
 
-        {/* 7. Methodology & Compliance Remarks */}
+        {/* 8. Methodology & Compliance Remarks */}
         <div className="rounded-md border border-border bg-muted/20 p-4 space-y-2 text-xs text-muted-foreground">
           <h4 className="font-bold text-foreground">Accreditation Methodology & Compliance Notes:</h4>
           <ol className="list-decimal pl-5 space-y-1">
@@ -346,7 +479,11 @@ export function ReportsView() {
               <strong>Student Calculation:</strong> Total students S = UG2 + UG3 + UG4 + PG1 + PG2. First-Year UG students are excluded as their faculty deployment is evaluated separately under Basic Sciences & Humanities (Criterion 2).
             </li>
             <li>
-              <strong>Faculty Eligibility Criteria:</strong> Only full-time faculty deployed for departmental teaching (non-first-year) holding Regular or Contractual appointments are included in F.
+              <strong>Faculty Eligibility Criteria:</strong> Only full-time faculty
+              deployed for departmental teaching (non-first-year) holding Regular or
+              Contractual appointments who joined on or before August 1 and did not
+              leave before June 1 are included in F. CAY uses the current academic
+              year and CAYm1/CAYm2 use the two previous academic years.
             </li>
             <li>
               <strong>Contractual Faculty Institutional Verification Note:</strong> Contractual faculty counted in this report have been verified for full-time status and departmental teaching. Colleges must maintain documentary evidence of open selection committee appointment, requisite AICTE/UGC qualifications, and minimum continuous service of two semesters during peer team visit.
